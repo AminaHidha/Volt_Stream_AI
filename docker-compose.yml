@@ -1,0 +1,39 @@
+version: "3.9"
+
+# Think of "services" as a list of containers you want to run together.
+# Each service is one running application.
+services:
+
+  # ✅ Service 1: Your FastAPI AI chatbot
+  fastapi:
+    build: .                        # Build using the Dockerfile in this folder
+    container_name: voltstream_ai   # A friendly name for the container
+    ports:
+      - "8001:8001"                 # Your laptop's port 8001 → container's port 8001
+    environment:
+      # These are the environment variables your FastAPI app needs.
+      # Docker reads these and makes them available inside the container
+      # exactly like your .env file does on your laptop.
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - db                          # Wait for the database to start first
+    restart: always                 # Auto-restart if the container crashes
+
+  # ✅ Service 2: PostgreSQL database (for storing chat history)
+  db:
+    image: postgres:15              # Use official PostgreSQL 15 image (no Dockerfile needed)
+    container_name: voltstream_db
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5433:5432"                 # Using 5433 on your laptop to avoid clashing
+                                    # with your existing local PostgreSQL on 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Keeps your data even if container restarts
+
+# Named volume so database data persists between container restarts
+volumes:
+  postgres_data:
