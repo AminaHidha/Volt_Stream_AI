@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.chat import router as chat_router
 from database.database import Base, engine
 from models.chat_model import ChatMessageDB
-from services.rag_service import load_stations_to_vectordb
 
 app = FastAPI(
     title="VoltStream AI Service",
@@ -12,19 +11,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# ✅ Fix CORS — allow frontend to call this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def startup_event():
-    """Load stations into ChromaDB on startup"""
-    print("Loading stations into RAG vector database...")
-    load_stations_to_vectordb()
 
 @app.get("/", include_in_schema=False)
 def root_redirect():

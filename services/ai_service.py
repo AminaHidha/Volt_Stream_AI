@@ -1,3 +1,4 @@
+from .analytics_service import query_analytics
 import os
 import requests
 from dotenv import load_dotenv
@@ -10,6 +11,10 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
 def ask_ai(message: str, history: list, stations: list = None, user: dict = None):
+
+    analytics_answer = query_analytics(message)
+    if analytics_answer:
+        return analytics_answer
 
     print("=== ask_ai called ===")
     print("message:", message)
