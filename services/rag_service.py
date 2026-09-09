@@ -59,23 +59,19 @@ Closing Time: {station.get('closing_time', '')}
             print("No stations found")
             return False
 
-        splitter = CharacterTextSplitter(
-            chunk_size=500,
-            chunk_overlap=50
-        )
+        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         split_docs = splitter.split_documents(documents)
 
         vectorstore = Chroma.from_documents(
-            documents=split_docs,
+            split_docs,
             embedding=embeddings,
             persist_directory=CHROMA_PATH
         )
-
-        print(f"✅ Loaded {len(documents)} stations into ChromaDB")
+        print(f"Loaded {len(split_docs)} chunks into ChromaDB")
         return True
 
     except Exception as e:
-        print(f"Error loading stations: {e}")
+        print(f"Error loading stations to vectordb: {e}")
         return False
 
 
@@ -83,16 +79,10 @@ def search_relevant_stations(query: str, k: int = 3) -> str:
     try:
         vectorstore = get_vectorstore()
         results = vectorstore.similarity_search(query, k=k)
-
         if not results:
             return ""
-
-        context = "Relevant VoltStream Charging Stations:\n\n"
-        for doc in results:
-            context += doc.page_content + "\n\n"
-
-        return context
-
+        context = "\n\n".join([doc.page_content for doc in results])
+        return f"Relevant EV stations:\n{context}"
     except Exception as e:
-        print(f"Search error: {e}")
+        print(f"RAG search error: {e}")
         return ""

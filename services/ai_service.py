@@ -62,7 +62,7 @@ def ask_ai(message: str, history: list, stations: list = None, user: dict = None
                 "X-Title": "VoltStream AI",
             },
             json={
-                "model": "anthropic/claude-3-haiku",
+                "model": "openrouter/free",
                 "messages": messages,
                 "temperature": 0.1,
                 "max_tokens": 60,
@@ -75,7 +75,11 @@ def ask_ai(message: str, history: list, stations: list = None, user: dict = None
 
         response.raise_for_status()
         result = response.json()
-        ai_reply = result["choices"][0]["message"]["content"].strip()
+        ai_reply = result["choices"][0]["message"].get("content") or ""
+        ai_reply = ai_reply.strip()
+
+        if not ai_reply:
+            return "I'm not able to answer that right now — could you try rephrasing?"
 
         # Hard truncate
         sentences = [s.strip() for s in ai_reply.split('.') if s.strip()]

@@ -1,15 +1,15 @@
-version: "3.9"
+﻿version: "3.9"
 
 # Think of "services" as a list of containers you want to run together.
 # Each service is one running application.
 services:
 
-  # ✅ Service 1: Your FastAPI AI chatbot
+  # âœ… Service 1: Your FastAPI AI chatbot
   fastapi:
     build: .                        # Build using the Dockerfile in this folder
     container_name: voltstream_ai   # A friendly name for the container
     ports:
-      - "8001:8001"                 # Your laptop's port 8001 → container's port 8001
+      - "8001:8001"                 # Your laptop's port 8001 â†’ container's port 8001
     environment:
       # These are the environment variables your FastAPI app needs.
       # Docker reads these and makes them available inside the container
@@ -20,7 +20,7 @@ services:
       - db                          # Wait for the database to start first
     restart: always                 # Auto-restart if the container crashes
 
-  # ✅ Service 2: PostgreSQL database (for storing chat history)
+  # âœ… Service 2: PostgreSQL database (for storing chat history)
   db:
     image: postgres:15              # Use official PostgreSQL 15 image (no Dockerfile needed)
     container_name: voltstream_db
